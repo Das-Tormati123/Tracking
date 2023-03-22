@@ -1,0 +1,211 @@
+<html>
+  <head>
+    <title>Directions Service (Complex)</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<style>
+/* Always set the map height explicitly to define the size of the div
+ * element that contains the map. */
+
+#dvMap {
+  height: 80%;
+  width: 100%;
+}
+* { font-family: Calibri; font-size: 20px; }
+    table, th, td {
+      border: solid 1px #ddd;
+      border-collapse: collapse;
+      padding: 2px 3px;
+      text-align: center;
+    }
+    th {
+      font-weight:bold;
+    }
+    p { padding: 10px 0; }
+
+/* Optional: Makes the sample page fill the window. */
+
+html,
+body,
+#map {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+</style>
+</head>
+<body>
+<script>
+
+var Routejson1 = [{
+    "timestamp": 'Ameerpet',
+    "latitude": '17.4374614',
+    "longitude": '78.4482878'
+  },
+  {
+    "timestamp": 'Kphb',
+    "latitude": '17.4833526',
+    "longitude": '78.38706679999996'
+  },
+  {
+  "timestamp": 'Hitech City',
+    "latitude": '17.4474117',
+    "longitude": '78.37623039999994'
+  },
+  
+  {
+    "timestamp": 'Panjagutta',
+    "latitude": '17.4264979',
+    "longitude": '78.45113220000007'
+  },
+  {
+    "timestamp": 'Abids',
+    "latitude": '17.393',
+    "longitude": '78.473'
+  },
+  {
+    "timestamp": 'SrNaghar',
+    "latitude": '17.44365',
+    "longitude": '78.445826'
+  },
+  {
+    "timestamp": 'Jubliee hills',
+    "latitude": '17.4325235',
+    "longitude": '78.40701519999993'
+  },
+  {
+    "timestamp": 'Kohtaguda',
+    "latitude": '17.464349',
+    "longitude": '78.375596'
+  }
+
+];
+
+window.addEventListener('load', 
+  function() { 
+    initMap();
+    createtabledata();
+  }, false);
+
+function RouteMap(markers)
+{
+  debugger;
+  var mapOptions = {
+    center: new google.maps.LatLng(markers[0].latitude, markers[0].longitude),
+    zoom: 10,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+  var map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+  var infoWindow = new google.maps.InfoWindow();
+  var lat_lng = new Array();
+  var latlngbounds = new google.maps.LatLngBounds();
+  for (i = 0; i < markers.length; i++) {
+    var data = markers[i];
+    var myLatlng = new google.maps.LatLng(data.latitude, data.longitude);
+    lat_lng.push(myLatlng);
+    var marker = new google.maps.Marker({
+      position: myLatlng,
+      map: map,
+      title: data.timestamp
+    });
+    
+    latlngbounds.extend(marker.position);
+    (function(marker, data) {
+      google.maps.event.addListener(marker, "click", function(e) {
+        infoWindow.setContent(data.timestamp);
+        infoWindow.open(map, marker);
+      });
+    })(marker, data);
+  }
+  map.setCenter(latlngbounds.getCenter());
+  map.fitBounds(latlngbounds);
+  Routingdirectionalternate(lat_lng,map);
+}
+  //***********ROUTING****************//
+function Routingdirectionalternate(lat_lng,map)
+{
+
+  //Initialize the Direction Service
+  var service = new google.maps.DirectionsService();
+
+  //Loop and Draw Path Route between the Points on MAP
+  for (var i = 0; i< lat_lng.length;i=i+2) {
+    //(i + j) < lat_lng.length && 
+    //  if ((i+1) <lat_lng.length ) {
+      var src = lat_lng[i];
+      var des = lat_lng[i+1];
+     
+ //console.log(i,src, i+1,des);
+      service.route({
+        origin: src,
+        destination: des,
+        travelMode: google.maps.DirectionsTravelMode.WALKING
+      }, function(result, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+
+          //Initialize the Path Array
+          var path = new google.maps.MVCArray();
+          //Set the Path Stroke Color
+          var poly = new google.maps.Polyline({
+            map: map,
+            strokeColor: '#4986E7'
+          });
+          poly.setPath(path);
+          for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
+            path.push(result.routes[0].overview_path[i]);
+          }
+        }
+      });
+    }
+ // }
+ 
+}
+
+function initMap() {
+    debugger;
+   RouteMap(Routejson1);
+  // Routingdirectionalternate(lat_lng);
+}
+function createtabledata()
+{
+ 
+  let col = ["PointA","PointB"];
+  var griddata=[];
+  for (i = 0; i < Routejson1.length; i++) {
+    var data = Routejson1[i];
+    griddata.push(data.timestamp);
+  }
+ 
+  console.log(griddata);
+  var results = "";
+  results = "<table>";
+            for (var i=0; i<griddata.length; i=i+2) { //###NOTICE THE CHANGE FROM i++ TO     i=i+2               
+                results += "<tr><td>" + griddata[i] + "</td>";  
+                if(i+1 < griddata.length){
+                results += "<td>" + griddata[i+1] + "</td></tr>";  
+                } 
+                else{
+                  results += "<td></td></tr>";   
+                }
+            }
+
+        results += "<tr><td colspan=2></td></tr>";
+  //   Prepare html header
+     var headerRowHTML='<tr>';
+        for(var i=0;i<col.length;i++){
+            headerRowHTML+='<th>'+col[i]+'</th>';
+        }
+        headerRowHTML+='</tr>';       
+         
+    var table=document.getElementById("display_json_data");
+        table.innerHTML=headerRowHTML + results;
+        // table.innerHTML=results;
+}
+</script>
+<div id="dvMap"></div>
+<table id="display_json_data" border="1"></table>
+<!-- Replace the value of the key parameter with your own API key. -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&v=weekly"></script>
+
+</body>
+</html>

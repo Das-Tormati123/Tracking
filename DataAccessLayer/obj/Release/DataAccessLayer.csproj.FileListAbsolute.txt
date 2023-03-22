@@ -1,0 +1,6 @@
+D:\BusTrackingSystem\BusTrackingWebSite\DataAccessLayer\bin\Release\DataAccessLayer.dll
+D:\BusTrackingSystem\BusTrackingWebSite\DataAccessLayer\bin\Release\DataAccessLayer.pdb
+D:\BusTrackingSystem\BusTrackingWebSite\DataAccessLayer\obj\Release\DataAccessLayer.csproj.AssemblyReference.cache
+D:\BusTrackingSystem\BusTrackingWebSite\DataAccessLayer\obj\Release\DataAccessLayer.csproj.CoreCompileInputs.cache
+D:\BusTrackingSystem\BusTrackingWebSite\DataAccessLayer\obj\Release\DataAccessLayer.dll
+D:\BusTrackingSystem\BusTrackingWebSite\DataAccessLayer\obj\Release\DataAccessLayer.pdb
